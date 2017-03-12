@@ -10,12 +10,12 @@ namespace UberMicro
     class MapComponent_UberMicro : MapComponent
     {
         public bool enabled;
-        private Dictionary<Pawn, string> prioritizedJobs;
+        private Dictionary<Pawn, string> lastPrioritizedJobs;
 
         public MapComponent_UberMicro(Map map) : base(map)
         {
             this.enabled = true;
-            this.prioritizedJobs = new Dictionary<Pawn, string>();
+            this.lastPrioritizedJobs = new Dictionary<Pawn, string>();
         }
 
         public override void MapComponentTick()
@@ -26,19 +26,21 @@ namespace UberMicro
                 {
                     if (p.CurJob.playerForced)
                     {
-                        prioritizedJobs[p] = p.CurJob.ToString();
+                        lastPrioritizedJobs[p] = p.CurJob.ToString();
                     }
                     else
                     {
-                        if (prioritizedJobs[p] != null)
+                        string lastPrioritizedJob = null;
+                        if (lastPrioritizedJobs.TryGetValue(p, out lastPrioritizedJob) && lastPrioritizedJob != null)
                         {
                             Find.LetterStack.ReceiveLetter(
                                     "Job Done",
-                                    p.NameStringShort + " has completed their prioritized job to: " + prioritizedJobs[p],
-                                    LetterType.BadUrgent,
+                                    p.NameStringShort + " has completed their prioritized job to: " + lastPrioritizedJobs[p],
+                                    LetterType.Good,
                                     new GlobalTargetInfo(p)
                                 );
-                            prioritizedJobs[p] = null;
+                            Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+                            lastPrioritizedJobs[p] = null;
                         }
                     }
                 }
