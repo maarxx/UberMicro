@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ModMetaData>
+  <name>UberMicro</name>
+  <author>Maarx</author>
+  <url>https://github.com/maarxx/UberMicro/</url>
+  <targetVersion>0.16.1393</targetVersion>
+  <description>Provides button in-game to toggle mode on and off. When mode is on, then it pauses game and gives letter notification whenever a prioritized job is complete. Useful in emergency situations.</description>
+</ModMetaData>
