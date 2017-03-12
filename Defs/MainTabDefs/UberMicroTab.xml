@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MainTabDefs>
+
+  <MainTabDef>
+    <defName>UberMicro</defName>
+    <label>UberMicro</label>
+    <description>Toggle option to pause with notification whenever a prioritzed job is completed.</description>
+    <windowClass>Overlord.MainTabWindow_UberMicro</windowClass>
+    <order>998</order>
+    <!--<defaultToggleKey>F1</defaultToggleKey>-->
+  </MainTabDef>
+  
+</MainTabDefs>
