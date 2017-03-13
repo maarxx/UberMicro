@@ -2,6 +2,11 @@
 
 This is a mod for the game RimWorld by Ludeon Studios.
 
+# Table of Contents
+
+* [Introduction and Explanation](#introduction-and-explanation)
+* [Specific Additional Features](#specific-additional-features)
+
 # Introduction and Explanation
 
 You'll add the mod. You'll enable the mod. By default, it won't do anything. That's okay.
