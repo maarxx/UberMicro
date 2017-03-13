@@ -91,10 +91,12 @@ namespace UberMicro
                         {
                             buttonLabel += "OFF";
                         }
+                        /* TODO: Implement
                         if (Widgets.ButtonText(nextButton, buttonLabel))
                         {
                             component.colonistShotFinished = !curColonistShotFinished;
                         }
+                        */
                         break;
                     case 3:
                         buttonLabel = "Current Enemy Shot Begun is: ";
@@ -106,10 +108,12 @@ namespace UberMicro
                         {
                             buttonLabel += "OFF";
                         }
+                        /* TODO: Implement
                         if (Widgets.ButtonText(nextButton, buttonLabel))
                         {
                             component.enemyShotBegun = !curEnemyShotBegun;
                         }
+                        */
                         break;
                 }
             }
