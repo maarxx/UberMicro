@@ -11,12 +11,19 @@ namespace UberMicro
     class MapComponent_UberMicro : MapComponent
     {
         public bool enabled;
+        public bool draftedWalking;
+        public bool colonistShotFinished;
+        public bool enemyShotBegun;
+
         private Dictionary<Pawn, string> lastPrioritizedJobs;
         private Dictionary<Pawn, bool> lastJobWasDrafted;
 
         public MapComponent_UberMicro(Map map) : base(map)
         {
-            this.enabled = true;
+            this.enabled = false;
+            this.draftedWalking = false;
+            this.colonistShotFinished = false;
+            this.enemyShotBegun = false;
             this.lastPrioritizedJobs = new Dictionary<Pawn, string>();
             this.lastJobWasDrafted = new Dictionary<Pawn, bool>();
         }
@@ -27,34 +34,47 @@ namespace UberMicro
             {
                 foreach (Pawn p in map.mapPawns.FreeColonistsSpawned)
                 {
+                    if (!p.Drafted)
+                    {
+                        bool wasDrafted = false;
+                        if (lastJobWasDrafted.TryGetValue(p, out wasDrafted) && wasDrafted == true)
+                        {
+                            lastPrioritizedJobs[p] = "nothing";
+                            lastJobWasDrafted[p] = false;
+                        }
+                    }
+
+                    string curJob = getJobString(p.CurJob);
+                    string lastPrioritizedJob = "nothing";
+                    if (!lastPrioritizedJobs.ContainsKey(p))
+                    {
+                        lastPrioritizedJobs[p] = "nothing";
+                    }
+
+                    lastPrioritizedJob = lastPrioritizedJobs[p];
+
                     if (p.Downed)
                     {
-                        string lastPrioritizedJob;
-                        if ( !( lastPrioritizedJobs.TryGetValue(p, out lastPrioritizedJob) && lastPrioritizedJob.Equals("downed.") ) )
+                        if (!lastPrioritizedJob.Equals("downed."))
                         {
-                            Find.LetterStack.ReceiveLetter(
-                                        "Downed!",
-                                        p.NameStringShort + " has been downed!",
-                                        LetterType.Good,
-                                        new GlobalTargetInfo(p)
-                                    );
-                            Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+                            notifyAndPause(
+                                "Downed!",
+                                p.NameStringShort + " has been downed!",
+                                p
+                            );
                             lastPrioritizedJobs[p] = "downed.";
                         }
                     }
                     else if (p.Drafted)
                     {
                         lastJobWasDrafted[p] = true;
-                        //Log.Message(p.NameStringShort + "," + p.CurJob.ToString());
-                        string curJob = getJobString(p.CurJob);
                         if (curJob.Equals("moving."))// || curJob.Equals("standing.") || curJob.Equals("watching for targets."))
                         {
                             lastPrioritizedJobs[p] = "moving.";
                         }
                         else
                         {
-                            string lastPrioritizedJob = null;
-                            if (lastPrioritizedJobs.TryGetValue(p, out lastPrioritizedJob) && lastPrioritizedJob != null)
+                            if (lastPrioritizedJob != "nothing")
                             {
                                 if (lastPrioritizedJob.Equals("standing.") && curJob.Equals("watching for targets."))
                                 {
@@ -66,13 +86,11 @@ namespace UberMicro
                                 }
                                 else if (!curJob.Equals(lastPrioritizedJob))
                                 {
-                                    Find.LetterStack.ReceiveLetter(
-                                            "Job Done",
-                                            p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJobs[p] + "\" and is now \"" + getJobString(p.CurJob) + "\"",
-                                            LetterType.Good,
-                                            new GlobalTargetInfo(p)
-                                        );
-                                    Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+                                    notifyAndPause(
+                                        "Job Done",
+                                        p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJob + "\" and is now \"" + curJob + "\"",
+                                        p
+                                    );
                                     lastPrioritizedJobs[p] = curJob;
                                 }
                             }
@@ -84,28 +102,20 @@ namespace UberMicro
                     }
                     else
                     {
-                        bool wasDrafted = false;
-                        if (lastJobWasDrafted.TryGetValue(p, out wasDrafted) && wasDrafted == true)
-                        {
-                            lastPrioritizedJobs[p] = null;
-                        }
                         if (p.CurJob.playerForced)
                         {
-                            lastPrioritizedJobs[p] = getJobString(p.CurJob);
+                            lastPrioritizedJobs[p] = curJob;
                         }
                         else
                         {
-                            string lastPrioritizedJob = null;
-                            if (lastPrioritizedJobs.TryGetValue(p, out lastPrioritizedJob) && lastPrioritizedJob != null)
+                            if (lastPrioritizedJob != "nothing")
                             {
-                                Find.LetterStack.ReceiveLetter(
-                                        "Job Done",
-                                        p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJobs[p] + "\" and is now \"" + getJobString(p.CurJob) + "\"",
-                                        LetterType.Good,
-                                        new GlobalTargetInfo(p)
-                                    );
-                                Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
-                                lastPrioritizedJobs[p] = null;
+                                notifyAndPause(
+                                    "Job Done",
+                                    p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJob + "\" and is now \"" + curJob + "\"",
+                                    p
+                                );
+                                lastPrioritizedJobs[p] = "nothing";
                             }
                         }
                     }
@@ -138,5 +148,17 @@ namespace UberMicro
                 }
             }
         }
+
+        public static void notifyAndPause(string title, string text, Pawn target)
+        {
+            Find.LetterStack.ReceiveLetter(
+                    title,
+                    text,
+                    LetterType.Good,
+                    new GlobalTargetInfo(target)
+                );
+            Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+        }
+
     }
 }
