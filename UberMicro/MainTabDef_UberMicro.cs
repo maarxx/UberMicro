@@ -10,6 +10,11 @@ namespace UberMicro
 {
     public class MainTabWindow_UberMicro : MainTabWindow
     {
+
+        private const float BUTTON_HEIGHT = 50f;
+        private const float BUTTON_SPACE = 10f;
+
+
         public MainTabWindow_UberMicro()
         {
             //base.forcePause = true;
@@ -20,7 +25,7 @@ namespace UberMicro
             get
             {
                 //return base.InitialSize;
-                return new Vector2(200f, 200f);
+                return new Vector2(250f, 400f);
             }
         }
 
@@ -31,25 +36,82 @@ namespace UberMicro
         {
             base.DoWindowContents(canvas);
 
-            Rect topRow = new Rect(canvas);
-            topRow.height = 50f;
+            MapComponent_UberMicro component = Find.VisibleMap.GetComponent<MapComponent_UberMicro>();
+            bool curEnabled = component.enabled;
+            bool curDraftedWalking = component.draftedWalking;
+            bool curColonistShotFinished = component.colonistShotFinished;
+            bool curEnemyShotBegun = component.enemyShotBegun;
 
-            //Rect topRowLeft = new Rect(topRow);
-            //topRowLeft.width = 200f;
+            for (int i = 0; i < 4; i++)
+            {
+                Rect nextButton = new Rect(canvas);
+                nextButton.y = i * (BUTTON_HEIGHT + BUTTON_SPACE);
+                nextButton.height = BUTTON_HEIGHT;
 
-            bool curMode = Find.VisibleMap.GetComponent<MapComponent_UberMicro>().enabled;
-            string buttonLabel = "Current Mode is: ";
-            if (curMode)
-            {
-                buttonLabel += "ON";
-            }
-            else
-            {
-                buttonLabel += "OFF";
-            }
-            if ( Widgets.ButtonText(topRow, buttonLabel) )
-            {
-                Find.VisibleMap.GetComponent<MapComponent_UberMicro>().enabled = !curMode;
+                string buttonLabel;
+                switch (i)
+                {
+                    case 0:
+                        buttonLabel = "Current Enabled is: ";
+                        if (curEnabled)
+                        {
+                            buttonLabel += "ON";
+                        }
+                        else
+                        {
+                            buttonLabel += "OFF";
+                        }
+                        if (Widgets.ButtonText(nextButton, buttonLabel))
+                        {
+                            component.enabled = !curEnabled;
+                        }
+                        break;
+                    case 1:
+                        buttonLabel = "Current Drafted Walking is: ";
+                        if (curDraftedWalking)
+                        {
+                            buttonLabel += "ON";
+                        }
+                        else
+                        {
+                            buttonLabel += "OFF";
+                        }
+                        if (Widgets.ButtonText(nextButton, buttonLabel))
+                        {
+                            component.draftedWalking = !curDraftedWalking;
+                        }
+                        break;
+                    case 2:
+                        buttonLabel = "Current Colonist Shot Finished is: ";
+                        if (curColonistShotFinished)
+                        {
+                            buttonLabel += "ON";
+                        }
+                        else
+                        {
+                            buttonLabel += "OFF";
+                        }
+                        if (Widgets.ButtonText(nextButton, buttonLabel))
+                        {
+                            component.colonistShotFinished = !curColonistShotFinished;
+                        }
+                        break;
+                    case 3:
+                        buttonLabel = "Current Enemy Shot Begun is: ";
+                        if (curEnemyShotBegun)
+                        {
+                            buttonLabel += "ON";
+                        }
+                        else
+                        {
+                            buttonLabel += "OFF";
+                        }
+                        if (Widgets.ButtonText(nextButton, buttonLabel))
+                        {
+                            component.enemyShotBegun = !curEnemyShotBegun;
+                        }
+                        break;
+                }
             }
         }
 

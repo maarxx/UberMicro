@@ -84,6 +84,18 @@ namespace UberMicro
                                 {
                                     lastPrioritizedJobs[p] = curJob;
                                 }
+                                else if (lastPrioritizedJob.Equals("moving.") && curJob.Equals("standing."))
+                                {
+                                    if (draftedWalking)
+                                    {
+                                        notifyAndPause(
+                                            "Job Done",
+                                            p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJob + "\" and is now \"" + curJob + "\"",
+                                            p
+                                        );
+                                    }
+                                    lastPrioritizedJobs[p] = curJob;
+                                }
                                 else if (!curJob.Equals(lastPrioritizedJob))
                                 {
                                     notifyAndPause(
