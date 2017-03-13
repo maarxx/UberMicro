@@ -19,7 +19,7 @@ You'll leave the whole thing OFF most of the time. And it still won't do anythin
 
 But when the shit really, really hits the fan, and your colony is in serious trouble, there will be a few critical game-hours where you need absolutely everybody to do exactly as you say, continously, without a single wasted moment, or else everybody is going to die today.
 
-And when that time is upon you, that is when you'll go into the MainTab and hit the button to turn it ON. This is why you installed UberMicro.
+And when this time is upon you, this is when you'll go into the MainTab and hit the button to turn it ON. This is why you installed UberMicro.
 
 While it is ON, every time a pawn completes a prioritized task, you'll get a blue letter/notification, and the game will pause. You can click the letter to jump to the location, and probably give them their next instruction.
 
