@@ -12,7 +12,7 @@ Within the game, it adds a MainTab, probably in the far-bottom-right-corner, lab
 
 You'll leave the whole thing OFF most of the time. And it still won't do anything. And that's still okay.
 
-But when the shit really, really hits the fan, and your colony is in serious trouble, there will be a few critical game-hours where you need absolutely everybody to do exactly as you say, continously, without a single wasted moment.
+But when the shit really, really hits the fan, and your colony is in serious trouble, there will be a few critical game-hours where you need absolutely everybody to do exactly as you say, continously, without a single wasted moment, or else everybody is going to die today.
 
 And that is when you'll go into the MainTab and hit the button to turn it ON. This is why you installed UberMicro.
 
