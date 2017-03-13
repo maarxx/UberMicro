@@ -23,3 +23,7 @@ In this critical, defining moment, you are now the absolute king of micro, being
 You've saved everybody, and your colony lives and prospers.
 
 Congratulations.
+
+# Specific Additional Features
+
+The 2nd button controls whether you want a notification and pause when a drafted pawn finishes walking to their given destination.
