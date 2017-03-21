@@ -70,13 +70,16 @@ namespace UberMicro
 
         private void processJobString(Pawn p, string curJob, bool notify)
         {
+            Log.Message("Processing: " + p.NameStringShort);
             if (!lastPrioritizedJobs.ContainsKey(p))
             {
+                Log.Message("Was empty, now NOTHING");
                 lastPrioritizedJobs[p] = NOTHING;
             }
             else
             {
                 string lastPrioritizedJob = lastPrioritizedJobs[p];
+                Log.Message("LastJob: " + lastPrioritizedJob + " CurJob: " + curJob);
                 if (lastPrioritizedJob != NOTHING && lastPrioritizedJob != curJob)
                 {
                     if (notify)
@@ -112,6 +115,10 @@ namespace UberMicro
                         {
                             // Deliberately do nothing.
                         }
+                        else if (lastPrioritizedJob == STANDING || lastPrioritizedJob == WATCHING)
+                        {
+                            // Deliberately do nothing.
+                        }
                         else
                         {
                             notifyAndPause(
@@ -121,8 +128,8 @@ namespace UberMicro
                             );
                         }
                     }
-                    lastPrioritizedJobs[p] = curJob;
                 }
+                lastPrioritizedJobs[p] = curJob;
             }
         }
 
