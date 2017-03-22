@@ -1,4 +1,5 @@
-﻿using RimWorld.Planet;
+﻿using RimWorld;
+using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,127 +16,37 @@ namespace UberMicro
         public bool colonistShotFinished;
         public bool enemyShotBegun;
 
-        private Dictionary<Pawn, string> lastPrioritizedJobs;
-        private Dictionary<Pawn, bool> lastJobWasDrafted;
+        private bool firstPass;
+
+        private Dictionary<Pawn, string> lastJobStrings;
+        private Dictionary<Pawn, bool> lastJobSignificance;
+
+        // Not real, just placeholders.
+        private const string NOTHING = "nothing.";
+        private const string DOWNED = "downed.";
+        private const string BURNING = "burning.";
+
+        // Actually real job strings.
+        private const string MOVING = "moving.";
+        private const string STANDING = "standing.";
+        private const string WATCHING = "watching for targets.";
 
         public MapComponent_UberMicro(Map map) : base(map)
         {
+
             this.enabled = false;
             this.draftedWalking = false;
             this.colonistShotFinished = false;
             this.enemyShotBegun = false;
-            this.lastPrioritizedJobs = new Dictionary<Pawn, string>();
-            this.lastJobWasDrafted = new Dictionary<Pawn, bool>();
+
+            this.firstPass = true;
+
+            this.lastJobStrings = new Dictionary<Pawn, string>();
+            this.lastJobSignificance = new Dictionary<Pawn, bool>();
+
         }
 
-        public override void MapComponentTick()
-        {
-            if (enabled)
-            {
-                foreach (Pawn p in map.mapPawns.FreeColonistsSpawned)
-                {
-                    if (!p.Drafted)
-                    {
-                        bool wasDrafted = false;
-                        if (lastJobWasDrafted.TryGetValue(p, out wasDrafted) && wasDrafted == true)
-                        {
-                            lastPrioritizedJobs[p] = "nothing";
-                            lastJobWasDrafted[p] = false;
-                        }
-                    }
-
-                    string curJob = getJobString(p.CurJob);
-                    string lastPrioritizedJob = "nothing";
-                    if (!lastPrioritizedJobs.ContainsKey(p))
-                    {
-                        lastPrioritizedJobs[p] = "nothing";
-                    }
-
-                    lastPrioritizedJob = lastPrioritizedJobs[p];
-
-                    if (p.Downed)
-                    {
-                        if (!lastPrioritizedJob.Equals("downed."))
-                        {
-                            notifyAndPause(
-                                "Downed!",
-                                p.NameStringShort + " has been downed!",
-                                p
-                            );
-                            lastPrioritizedJobs[p] = "downed.";
-                        }
-                    }
-                    else if (p.Drafted)
-                    {
-                        lastJobWasDrafted[p] = true;
-                        if (curJob.Equals("moving."))// || curJob.Equals("standing.") || curJob.Equals("watching for targets."))
-                        {
-                            lastPrioritizedJobs[p] = "moving.";
-                        }
-                        else
-                        {
-                            if (lastPrioritizedJob != "nothing")
-                            {
-                                if (lastPrioritizedJob.Equals("standing.") && curJob.Equals("watching for targets."))
-                                {
-                                    lastPrioritizedJobs[p] = curJob;
-                                }
-                                else if (p.CurJob.playerForced)
-                                {
-                                    lastPrioritizedJobs[p] = curJob;
-                                }
-                                else if (lastPrioritizedJob.Equals("moving.") && curJob.Equals("standing."))
-                                {
-                                    if (draftedWalking)
-                                    {
-                                        notifyAndPause(
-                                            "Job Done",
-                                            p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJob + "\" and is now \"" + curJob + "\"",
-                                            p
-                                        );
-                                    }
-                                    lastPrioritizedJobs[p] = curJob;
-                                }
-                                else if (!curJob.Equals(lastPrioritizedJob))
-                                {
-                                    notifyAndPause(
-                                        "Job Done",
-                                        p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJob + "\" and is now \"" + curJob + "\"",
-                                        p
-                                    );
-                                    lastPrioritizedJobs[p] = curJob;
-                                }
-                            }
-                            else
-                            {
-                                lastPrioritizedJobs[p] = curJob;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (p.CurJob.playerForced)
-                        {
-                            lastPrioritizedJobs[p] = curJob;
-                        }
-                        else
-                        {
-                            if (lastPrioritizedJob != "nothing")
-                            {
-                                notifyAndPause(
-                                    "Job Done",
-                                    p.NameStringShort + " has stopped or completed their last job to \"" + lastPrioritizedJob + "\" and is now \"" + curJob + "\"",
-                                    p
-                                );
-                                lastPrioritizedJobs[p] = "nothing";
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static string getJobString(Job j)
+        private static string getJobString(Job j)
         {
             if (j.targetA.Thing == null)
             {
@@ -161,7 +72,7 @@ namespace UberMicro
             }
         }
 
-        public static void notifyAndPause(string title, string text, Pawn target)
+        private static void notifyAndPause(string title, string text, Pawn target)
         {
             Find.LetterStack.ReceiveLetter(
                     title,
@@ -170,6 +81,115 @@ namespace UberMicro
                     new GlobalTargetInfo(target)
                 );
             Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+        }
+
+        public override void MapComponentTick()
+        {
+
+            if (!enabled)
+            {
+                firstPass = true;
+            }
+            else
+            {
+
+                foreach (Pawn p in map.mapPawns.FreeColonistsSpawned)
+                {
+
+                    if (!lastJobStrings.ContainsKey(p))
+                    {
+                        lastJobStrings.Add(p, NOTHING);
+                    }
+
+                    if (!lastJobSignificance.ContainsKey(p))
+                    {
+                        lastJobSignificance.Add(p, false);
+                    }
+
+                    string lastJobString = lastJobStrings[p];
+                    bool lastJobSignificant = lastJobSignificance[p];
+
+                    string curJobString = NOTHING;
+                    bool curJobSignificant = false;
+                    bool interruptSignificant = false;
+
+                    if (p.Downed)
+                    {
+                        curJobString = DOWNED;
+                        curJobSignificant = false;
+                        interruptSignificant = true;
+                    }
+                    else if (FireUtility.IsBurning(p))
+                    {
+                        curJobString = BURNING;
+                        curJobSignificant = true;
+                        interruptSignificant = true;
+                    }
+                    else
+                    {
+                        curJobString = getJobString(p.CurJob);
+                        if (p.CurJob.playerForced)
+                        {
+                            if (curJobString == MOVING)
+                            {
+                                if (draftedWalking)
+                                {
+                                    curJobSignificant = true;
+                                }
+                            }
+                            else
+                            {
+                                curJobSignificant = true;
+                            }
+                        }
+                    }
+
+                    if (!firstPass)
+                    {
+                        if (lastJobString != curJobString)
+                        {
+                            if (interruptSignificant)
+                            {
+                                if (curJobString == DOWNED)
+                                {
+                                    notifyAndPause(
+                                        "Downed!",
+                                        p.NameStringShort + " is downed, their last job was \"" + lastJobString + "\"",
+                                        p
+                                    );
+                                }
+                                else if (curJobString == BURNING)
+                                {
+                                    notifyAndPause(
+                                        "Burning!",
+                                        p.NameStringShort + " is burning, their last job was \"" + lastJobString + "\"",
+                                        p
+                                    );
+                                }
+                                else
+                                {
+                                    notifyAndPause(
+                                        "Interrupted!",
+                                        p.NameStringShort + " was interrupted, their last job was \"" + lastJobString + "\"",
+                                        p
+                                    );
+                                }
+                            }
+                            else if (lastJobSignificant)
+                            {
+                                notifyAndPause(
+                                    "Job Done",
+                                    p.NameStringShort + " has completed or stopped their last job to \"" + lastJobString + "\" and is now \"" + curJobString + "\"",
+                                    p
+                                );
+                            }
+                        }
+                    }
+                    lastJobStrings[p] = curJobString;
+                    lastJobSignificance[p] = curJobSignificant;
+                }
+                firstPass = false;
+            }
         }
 
     }
