@@ -118,21 +118,29 @@ namespace UberMicro
                         curJobString = DOWNED;
                         curJobSignificant = false;
                         interruptSignificant = true;
-                        //processJobString(p, DOWNED, notFirstPass);
                     }
                     else if (FireUtility.IsBurning(p))
                     {
                         curJobString = BURNING;
                         curJobSignificant = true;
                         interruptSignificant = true;
-                        //processJobString(p, BURNING, notFirstPass);
                     }
                     else
                     {
                         curJobString = getJobString(p.CurJob);
                         if (p.CurJob.playerForced)
                         {
-                            curJobSignificant = true;
+                            if (curJobString == MOVING)
+                            {
+                                if (draftedWalking)
+                                {
+                                    curJobSignificant = true;
+                                }
+                            }
+                            else
+                            {
+                                curJobSignificant = true;
+                            }
                         }
                     }
 
@@ -171,7 +179,7 @@ namespace UberMicro
                             {
                                 notifyAndPause(
                                     "Job Done",
-                                    p.NameStringShort + " has completed (or stopped?) their last job to \"" + lastJobString + "\" and is now \"" + curJobString + "\"",
+                                    p.NameStringShort + " has completed or stopped their last job to \"" + lastJobString + "\" and is now \"" + curJobString + "\"",
                                     p
                                 );
                             }
