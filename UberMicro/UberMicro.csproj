@@ -47,7 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainTabDef_UberMicro.cs" />
+    <Compile Include="MainTabWindow_UberMicro.cs" />
     <Compile Include="MapComponent_UberMicro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
