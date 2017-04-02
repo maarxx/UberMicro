@@ -44,6 +44,18 @@ namespace UberMicro
             this.lastJobStrings = new Dictionary<Pawn, string>();
             this.lastJobSignificance = new Dictionary<Pawn, bool>();
 
+            LongEventHandler.QueueLongEvent(ensureComponentExists, null, false, null);
+        }
+
+        public static void ensureComponentExists()
+        {
+            foreach (Map m in Find.Maps)
+            {
+                if (m.GetComponent<MapComponent_UberMicro>() == null)
+                {
+                    m.components.Add(new MapComponent_UberMicro(m));
+                }
+            }
         }
 
         private static string getJobString(Job j)

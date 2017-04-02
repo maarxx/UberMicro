@@ -14,8 +14,6 @@ This is a mod for the game RimWorld by Ludeon Studios.
 
 You'll add the mod. You'll enable the mod. By default, it won't do anything. That's okay.
 
-It might only work on new games, because it adds a Map Component, and because I really don't know.
-
 Within the game, it adds a MainTab, probably in the far-bottom-right-corner, labeled "UberMicro", with a button to turn the whole thing ON or OFF, and more buttons to turn specific features ON or OFF.
 
 You'll leave the whole thing OFF most of the time. And it still won't do anything. And that's still okay.
