@@ -42,6 +42,7 @@ namespace UberMicro
             bool curColonistShotFinished = component.colonistShotFinished;
             bool curEnemyShotBegun = component.enemyShotBegun;
 
+            Text.Font = GameFont.Small;
             for (int i = 0; i < 4; i++)
             {
                 Rect nextButton = new Rect(canvas);
