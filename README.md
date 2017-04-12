@@ -2,6 +2,8 @@
 
 This is a mod for the game RimWorld by Ludeon Studios.
 
+It provides button in-game to toggle mode on and off. When mode is on, then it pauses game and gives letter notification whenever a prioritized job is complete. Useful in emergency situations.
+
 # Table of Contents
 
 * [Introduction and Explanation](#introduction-and-explanation)
